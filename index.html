@@ -10,6 +10,10 @@
     <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700;800;900&display=swap" rel="stylesheet">
     <!-- Phosphor Icons CDN for modern, clean icons -->
     <script src="https://unpkg.com/@phosphor-icons/web@2.1.1/dist/phosphor.js"></script>
+    <!-- Chart.js CDN for dynamic charts -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <!-- Chart.js Datalabels Plugin for labels on bars/points -->
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0"></script>
     <style>
         body {
             font-family: 'Open Sans', sans-serif; /* Font 'Open Sans' olarak ayarlandı */
@@ -78,19 +82,27 @@
             box-shadow: 0 14px 25px -7px rgba(0, 0, 0, 0.3), 0 6px 10px -3px rgba(0, 0, 0, 0.15); /* Hover'da daha belirgin gölge */
         }
 
-        .responsive-image {
-            max-width: 100%;
-            height: auto;
-            border-radius: 0.75rem;
+        /* Grafik kapsayıcısı için minimum yükseklik ve responsivite */
+        .chart-container {
+            position: relative;
+            height: 400px; /* Sabit yükseklik, responsivite için max-height de eklenebilir */
+            width: 100%;
+            margin-top: 1.5rem;
+            margin-bottom: 2rem;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            border: 1px solid #E5E7EB; /* Görsel çevresine ince kenarlık */
+            border-radius: 0.75rem;
+            background-color: #ffffff;
+            padding: 1rem;
         }
-        .source-text-image {
-            font-size: 0.875rem; /* Slightly larger for clarity */
-            color: #6B7280; /* gray-500 */
-            text-align: right;
-            margin-top: 0.5rem;
-            padding-right: 0.5rem;
+        @media (min-width: 768px) { /* Orta ekranlar için yükseklik */
+            .chart-container {
+                height: 500px;
+            }
+        }
+        @media (min-width: 1024px) { /* Geniş ekranlar için yükseklik */
+            .chart-container {
+                height: 550px;
+            }
         }
 
         /* PDF çıktısı için özel stiller */
@@ -122,10 +134,17 @@
             .styled-table, .section-item-card {
                 page-break-inside: avoid; /* Tabloların ve kartların bölünmesini engelle */
             }
-            .responsive-image {
-                page-break-inside: avoid; /* Görselin bölünmesini engelle */
-                max-width: 90%; /* PDF'te görseli biraz küçültme */
+            /* Dinamik grafikler için print stilleri */
+            .chart-container canvas {
+                max-width: 90% !important; /* PDF'te görseli biraz küçültme */
+                height: auto !important; /* Yüksekliği otomatik yap */
             }
+            .chart-container {
+                height: auto !important; /* PDF'te yüksekliği otomatik yap */
+                padding: 0 !important; /* Padding kaldır */
+                box-shadow: none !important; /* Gölge kaldır */
+            }
+
             h1, h2, h3, h4 {
                 page-break-after: avoid; /* Başlıktan sonra hemen sayfa sonu gelmesini engelle */
             }
@@ -169,7 +188,8 @@
 
             <!-- Giriş ve Analizin Amacı Bölümü -->
             <section class="bg-white p-10 rounded-2xl shadow-xl animate-fadeIn" style="animation-delay: 0.3s;">
-                <h2 class="text-3xl sm:text-4xl font-extrabold text-gray-800 mb-6 border-b-2 border-blue-600 pb-4">
+                <h2 class="text-3xl sm:text-4xl font-extrabold text-gray-800 mb-6 border-b-2 border-blue-600 pb-4 flex items-center gap-3">
+                    <i class="ph-fill ph-file-text text-blue-600 text-4xl"></i>
                     Giriş ve Analizin Amacı
                 </h2>
                 <p class="text-lg text-gray-700 leading-relaxed mb-6">
@@ -182,7 +202,8 @@
 
             <!-- 1. Isparta Bireysel Pay Senedi Yatırımcı Analizi -->
             <section class="bg-white p-10 rounded-2xl shadow-xl animate-fadeIn" style="animation-delay: 0.5s;">
-                <h2 class="text-3xl sm:text-4xl font-extrabold text-gray-800 mb-6 border-b-2 border-blue-600 pb-4">
+                <h2 class="text-3xl sm:text-4xl font-extrabold text-gray-800 mb-6 border-b-2 border-blue-600 pb-4 flex items-center gap-3">
+                    <i class="ph-fill ph-chart-line text-blue-600 text-4xl"></i>
                     1. Isparta Bireysel Pay Senedi Yatırımcı Analizi
                 </h2>
 
@@ -190,11 +211,9 @@
                 <h3 class="text-xl sm:text-2xl font-bold text-gray-700 mb-4">
                     Grafik 1: Isparta İli Bireysel Pay Senedi Yatırımcı Sayısı ve Portföy Büyüklüğü (2019-2025)
                 </h3>
-                <!-- Pay Senedi Grafiği -->
-                <div class="mb-2 flex justify-center">
-                    <img src="https://i.hizliresim.com/npacbhb.JPG"
-                         alt="Isparta İli Bireysel Pay Senedi Yatırımcı Sayısı ve Portföy Büyüklüğü Grafiği"
-                         class="responsive-image">
+                <!-- Pay Senedi Grafiği için Canvas -->
+                <div class="chart-container">
+                    <canvas id="paySenediChart"></canvas>
                 </div>
                 <p class="source-text-image">Kaynak: MKK</p>
 
@@ -205,32 +224,44 @@
                 </h3>
                 <div class="space-y-6">
                     <div class="section-item-card">
-                        <h4 class="text-lg font-semibold text-blue-700 mb-2">A. Giriş Dönemi (2019-2021):</h4>
-                        <ul class="list-disc list-inside text-gray-700 space-y-1">
+                        <h4 class="text-lg font-semibold text-blue-700 mb-2 flex items-center gap-2">
+                            <i class="ph-fill ph-plus-circle text-blue-500 text-2xl"></i>
+                            A. Giriş Dönemi (2019-2021):
+                        </h4>
+                        <ul class="list-disc list-inside text-gray-700 space-y-1 ml-4">
                             <li><strong>Yatırımcı Sayısı:</strong> 200'den 928'e.</li>
                             <li><strong>Portföy Değeri:</strong> ~200 M TL'den ~928 M TL'ye.</li>
                             <li><strong>Çıkarım:</strong> Pandemiyle artan genel bireysel ilgi. "Yeni giren ama düşük hacimli" yatırımcı profili.</li>
                         </ul>
                     </div>
                     <div class="section-item-card">
-                        <h4 class="text-lg font-semibold text-blue-700 mb-2">B. Bekleme - Durağan Dönem (2021-2022):</h4>
-                        <ul class="list-disc list-inside text-gray-700 space-y-1">
+                        <h4 class="text-lg font-semibold text-blue-700 mb-2 flex items-center gap-2">
+                            <i class="ph-fill ph-timer text-orange-500 text-2xl"></i>
+                            B. Bekleme - Durağan Dönem (2021-2022):
+                        </h4>
+                        <ul class="list-disc list-inside text-gray-700 space-y-1 ml-4">
                             <li><strong>Yatırımcı Sayısı:</strong> 928'den 1.845'e (2 kat artış).</li>
                             <li><strong>Portföy Değeri:</strong> ~1.2B TL'den ~1.8B TL'ye.</li>
                             <li><strong>Çıkarım:</strong> Artış devam etse de hız azalmıştır. Piyasa oynaklığı veya seçim belirsizlikleri bu durağanlığa yol açmış olabilir.</li>
                         </ul>
                     </div>
                     <div class="section-item-card">
-                        <h4 class="text-lg font-semibold text-blue-700 mb-2">C. Ani Sıçrama - Zirve Dönemi (Haziran 2022 - Haziran 2023):</h4>
-                        <ul class="list-disc list-inside text-gray-700 space-y-1">
+                        <h4 class="text-lg font-semibold text-blue-700 mb-2 flex items-center gap-2">
+                            <i class="ph-fill ph-rocket text-green-500 text-2xl"></i>
+                            C. Ani Sıçrama - Zirve Dönemi (Haziran 2022 - Haziran 2023):
+                        </h4>
+                        <ul class="list-disc list-inside text-gray-700 space-y-1 ml-4">
                             <li><strong>Yatırımcı Sayısı:</strong> 1.845'ten 48.896'ya (yaklaşık %2500 artış).</li>
                             <li><strong>Portföy Değeri:</strong> 1.8B TL'den 7.261B TL'ye (4 kat artış).</li>
                             <li><strong>Çıkarım:</strong> Bireysel yatırımcının en yüksek hacim ve sayıya ulaştığı dönemdir. Enflasyondan korunma refleksi, BIST'teki yüksek getiri dönemleri (2022 yazı - 2023 ilk çeyrek) ve sosyal medyada yatırım içeriklerinin viral etkisi etkili olmuştur.</li>
                         </ul>
                     </div>
                     <div class="section-item-card">
-                        <h4 class="text-lg font-semibold text-blue-700 mb-2">D. Yatırımcı Çıkışı - Stabilizasyon Dönemi (Haziran 2023 - Mayıs 2025):</h4>
-                        <ul class="list-disc list-inside text-gray-700 space-y-1">
+                        <h4 class="text-lg font-semibold text-blue-700 mb-2 flex items-center gap-2">
+                            <i class="ph-fill ph-chart-line-down text-red-500 text-2xl"></i>
+                            D. Yatırımcı Çıkışı - Stabilizasyon Dönemi (Haziran 2023 - Mayıs 2025):
+                        </h4>
+                        <ul class="list-disc list-inside text-gray-700 space-y-1 ml-4">
                             <li><strong>Yatırımcı Sayısı:</strong> 48.896'dan 41.680'e (yaklaşık %15 azalma).</li>
                             <li><strong>Portföy Değeri:</strong> 7.848B TL'den 7.689B TL'ye (stabil).</li>
                             <li><strong>Çıkarım:</strong> Büyük sermayeli yatırımcılar sistemde kalırken, düşük portföylü kitle piyasadan çekilmiştir. Hisse senedi piyasasında yaşanan oynaklık, kar realizasyonu ve likidite ihtiyacı bu çözülmede etkili olmuştur. Bu durum, Gedik Private'ın nitelikli ve uzun vadeli yatırımcıya odaklanma stratejisi için uygun bir zemin sunmaktadır.</li>
@@ -284,21 +315,16 @@
 
             <!-- 2. Isparta Bireysel Yatırım Fonu Piyasası Analizi -->
             <section class="bg-white p-10 rounded-2xl shadow-xl animate-fadeIn" style="animation-delay: 0.7s;">
-                <h2 class="text-3xl sm:text-4xl font-extrabold text-gray-800 mb-6 border-b-2 border-blue-600 pb-4">
+                <h2 class="text-3xl sm:text-4xl font-extrabold text-gray-800 mb-6 border-b-2 border-blue-600 pb-4 flex items-center gap-3">
+                    <i class="ph-fill ph-chart-pie text-blue-600 text-4xl"></i>
                     2. Isparta Bireysel Yatırım Fonu Piyasası Analizi
                 </h2>
                 <h3 class="text-xl sm:text-2xl font-bold text-gray-700 mb-4">
                     2.1. Grafik ve Genel Görünüm
                 </h3>
-                <!-- Grafik Başlığı -->
-                <h3 class="text-xl sm:text-2xl font-bold text-gray-700 mb-4">
-                    Grafik 2: Isparta İli Bireysel Yatırım Fonu Yatırımcı Sayısı ve Portföy Büyüklüğü (2019-2025)
-                </h3>
-                <!-- Yatırım Fonu Grafiği -->
-                <div class="mb-2 flex justify-center">
-                    <img src="https://i.hizliresim.com/2azod1v.JPG"
-                         alt="Isparta İli Bireysel Yatırım Fonu Yatırımcı Sayısı ve Portföy Büyüklüğü Grafiği"
-                         class="responsive-image">
+                <!-- Yatırım Fonu Grafiği için Canvas -->
+                <div class="chart-container">
+                    <canvas id="yatirimFonuChart"></canvas>
                 </div>
                 <p class="source-text-image">Kaynak: MKK</p>
                 <p class="text-lg text-gray-700 mt-6 leading-relaxed">
@@ -311,32 +337,44 @@
                 </h3>
                 <div class="space-y-6">
                     <div class="section-item-card">
-                        <h4 class="text-lg font-semibold text-blue-700 mb-2">A. Erken Gelişim ve İlk Büyüme (2019-01-2020-05):</h4>
-                        <ul class="list-disc list-inside text-gray-700 space-y-1">
+                        <h4 class="text-lg font-semibold text-blue-700 mb-2 flex items-center gap-2">
+                            <i class="ph-fill ph-seed text-blue-500 text-2xl"></i>
+                            A. Erken Gelişim ve İlk Büyüme (2019-01-2020-05):
+                        </h4>
+                        <ul class="list-disc list-inside text-gray-700 space-y-1 ml-4">
                             <li><strong>Portföy Değeri (Çubuk Grafik):</strong> Bu dönemde Portföy Değeri 150 Milyon TL'den başlayarak 2020-05'e kadar 216 Milyon TL seviyesine yükselmiştir. Bu, nispeten yavaş ama istikrarlı bir büyümeyi işaret etmektedir.</li>
                             <li><strong>Yatırımcı Sayısı (Sarı Çizgi):</strong> Yatırımcı Sayısı ise 3.000'li seviyelerden (2019-01: 3.308) 2020-05'te 16.673'e kadar keskin bir artış göstermiştir.</li>
                         </ul>
                     </div>
                     <div class="section-item-card">
-                        <h4 class="text-lg font-semibold text-blue-700 mb-2">B. Konsolidasyon ve Yavaşlama (2020-05-2022-05):</h4>
-                        <ul class="list-disc list-inside text-gray-700 space-y-1">
+                        <h4 class="text-lg font-semibold text-blue-700 mb-2 flex items-center gap-2">
+                            <i class="ph-fill ph-yin-yang text-orange-500 text-2xl"></i>
+                            B. Konsolidasyon ve Yavaşlama (2020-05-2022-05):
+                        </h4>
+                        <ul class="list-disc list-inside text-gray-700 space-y-1 ml-4">
                             <li><strong>Portföy Değeri:</strong> 2020-05'teki 216 Milyon TL'den 2022-05'te 508 Milyon TL'ye yükselmiştir. Büyüme devam etse de, bir önceki döneme göre daha ölçülüdür.</li>
                             <li><strong>Yatırımcı Sayısı:</strong> 2020-05'teki 16.673'ten 2022-05'te 17.034'e çok sınırlı bir artış göstermiştir. Hatta bazı aylarda hafif düşüşler de yaşanmıştır (örn. 2020-07 ve 2021-09).</li>
                         </ul>
                     </div>
                     <div class="section-item-card">
-                        <h4 class="text-lg font-semibold text-blue-700 mb-2">C. Hızlı Büyüme ve Yatırımcı Akını (2022-05-2023-11):</h4>
-                        <ul class="list-disc list-inside text-gray-700 space-y-1">
-                            <li><strong>Portföy Değeri:</strong> 2022-05'teki 508 Milyon TL'den 2023-11'de 2.404 Milyon TL'ye katlanarak artmıştır. Bu dönemdeki büyüme hızı önceki dönemlere göre çok daha fazladır.</li>
+                        <h4 class="text-lg font-semibold text-blue-700 mb-2 flex items-center gap-2">
+                            <i class="ph-fill ph-chart-line-up text-green-500 text-2xl"></i>
+                            C. Hızlı Büyüme ve Yatırımcı Akını (2022-05-2023-11):
+                        </h4>
+                        <ul class="list-disc list-inside text-gray-700 space-y-1 ml-4">
+                            <li><strong>Portföy Değeri:</strong> 2022-05'teki 508 Milyon TL'den 2.404 Milyon TL'ye katlanarak artmıştır. Bu dönemdeki büyüme hızı önceki dönemlere göre çok daha fazladır.</li>
                             <li><strong>Yatırımcı Sayısı:</strong> Aynı dönemde 17.034'ten 25.957'ye fırlamıştır.</li>
                             <li><strong>Çıkarım:</strong> Fon piyasasında tarihi zirve noktasıdır. Yeni yatırımcı girişi, fon bilinirliğinin artışı, alternatif yatırım aracı olarak fonların görülmesi etkili olmuştur.</li>
                         </ul>
                     </div>
                     <div class="section-item-card">
-                        <h4 class="text-lg font-semibold text-blue-700 mb-2">D. Zirve Yaklaşımı ve İstikrarlı Büyüme (2023-11 - 2025-05):</h4>
-                        <ul class="list-disc list-inside text-gray-700 space-y-1">
+                        <h4 class="text-lg font-semibold text-blue-700 mb-2 flex items-center gap-2">
+                            <i class="ph-fill ph-barbell text-purple-500 text-2xl"></i>
+                            D. Zirve Yaklaşımı ve İstikrarlı Büyüme (2023-11 - 2025-05):
+                        </h4>
+                        <ul class="list-disc list-inside text-gray-700 space-y-1 ml-4">
                             <li><strong>Portföy Değeri (Çubuk Grafik):</strong> 2023-11'deki 2.404 Milyon TL'den 2025-05'te 6.265 Milyon TL'ye yükselerek istikrarlı ve güçlü büyümesini sürdürmüştür.</li>
-                            <li><strong>Yatırımcı Sayısı (Sarı Çizgi):</strong> 2023-11'deki 25.957'den 2025-05'te 28.703'e ulaşmıştır. Bu dönemde yatırımcı sayısında da artış devam etse de, önceki "patlama" dönemine göre daha ılımlı bir hızdadır.</li>
+                            <li><strong>Yatırımcı Sayısı (Sarı Çizgi):</strong> 2023-11'deki 25.957'den 28.703'e ulaşmıştır. Bu dönemde yatırımcı sayısında da artış devam etse de, önceki "patlama" dönemine göre daha ılımlı bir hızdadır.</li>
                         </ul>
                     </div>
                 </div>
@@ -380,7 +418,8 @@
 
             <!-- 3. Genel Değerlendirme ve Stratejik Fırsatlar -->
             <section class="bg-white p-10 rounded-2xl shadow-xl animate-fadeIn" style="animation-delay: 0.9s;">
-                <h2 class="text-3xl sm:text-4xl font-extrabold text-gray-800 mb-6 border-b-2 border-blue-600 pb-4">
+                <h2 class="text-3xl sm:text-4xl font-extrabold text-gray-800 mb-6 border-b-2 border-blue-600 pb-4 flex items-center gap-3">
+                    <i class="ph-fill ph-lightbulb text-blue-600 text-4xl"></i>
                     3. Genel Değerlendirme ve Stratejik Fırsatlar
                 </h2>
                 <h3 class="text-xl sm:text-2xl font-bold text-gray-700 mb-5 mt-8">
@@ -388,20 +427,29 @@
                 </h3>
                 <ul class="space-y-6">
                     <li class="section-item-card">
-                        <h4 class="text-lg font-semibold text-blue-700 mb-2">Piyasa Katılımında Büyük Dalga ve Doygunluk:</h4>
-                        <p class="text-lg text-gray-700 leading-relaxed">
+                        <h4 class="text-lg font-semibold text-blue-700 mb-2 flex items-center gap-2">
+                            <i class="ph-fill ph-waves text-blue-500 text-2xl"></i>
+                            Piyasa Katılımında Büyük Dalga ve Doygunluk:
+                        </h4>
+                        <p class="text-lg text-gray-700 leading-relaxed ml-4">
                             Her iki piyasada da 2022-2023 döneminde yatırımcı sayısı ve portföy büyüklüğünde benzer, dramatik bir artış yaşanmıştır. Bu, geniş bir bireysel yatırımcı kitlesinin piyasalara yöneldiğini göstermektedir. Ancak 2023 sonrası dönemin stabilizasyon ve yatırımcı çıkışı, piyasanın bir doygunluğa ulaştığını işaret etmektedir.
                         </p>
                     </li>
                     <li class="section-item-card">
-                        <h4 class="text-lg font-semibold text-blue-700 mb-2">Nitelikli Yatırımcı Konsolidasyonu ("Akıllı Para"):</h4>
-                        <p class="text-lg text-gray-700 leading-relaxed">
+                        <h4 class="text-lg font-semibold text-blue-700 mb-2 flex items-center gap-2">
+                            <i class="ph-fill ph-diamond text-green-500 text-2xl"></i>
+                            Nitelikli Yatırımcı Konsolidasyonu ("Akıllı Para"):
+                        </h4>
+                        <p class="text-lg text-gray-700 leading-relaxed ml-4">
                             Yatırımcı sayısındaki genel düşüşe rağmen, portföy değerlerinin büyük ölçüde korunması, piyasada kalan yatırımcı kitlesinin daha bilinçli, deneyimli ve yüksek sermayeli olduğunu göstermektedir. Bu "akıllı para", Gedik Private'ın doğrudan hedef kitlesidir.
                         </p>
                     </li>
                     <li class="section-item-card">
-                        <h4 class="text-lg font-semibold text-blue-700 mb-2">Artan Bilgi ve Danışmanlık İhtiyacı:</h4>
-                        <p class="text-lg text-gray-700 leading-relaxed">
+                        <h4 class="text-lg font-semibold text-blue-700 mb-2 flex items-center gap-2">
+                            <i class="ph-fill ph-graduation-cap text-purple-500 text-2xl"></i>
+                            Artan Bilgi ve Danışmanlık İhtiyacı:
+                        </h4>
+                        <p class="text-lg text-gray-700 leading-relaxed ml-4">
                             Kısa vadeli getiri beklentileriyle piyasaya giren, ancak sonrasında konsolidasyon döneminde çekilen yatırımcılar, finansal okuryazarlıkta önemli bir yol katetmiş, ancak doğru yönlendirmeye ihtiyaç duyan bir kitleyi temsil etmektedir. Kalan nitelikli yatırımcılar ise daha karmaşık ve kişiselleştirilmiş danışmanlık hizmetleri arayışında olabilir.
                         </p>
                     </li>
@@ -427,38 +475,38 @@
                 </p>
                 <ul class="space-y-6">
                     <li class="section-item-card">
-                        <h4 class="text-lg font-semibold text-blue-700 mb-2 flex items-center gap-3">
-                            <i class="ph-fill ph-users-four text-blue-600 text-3xl"></i>
+                        <h4 class="text-lg font-semibold text-blue-700 mb-2 flex items-center gap-2">
+                            <i class="ph-fill ph-handshake text-blue-600 text-2xl"></i>
                             Nitelikli Yatırımcı Portföyünü Artırma ve İlişki Derinleştirme:
                         </h4>
-                        <p class="text-lg text-gray-700 leading-relaxed">
+                        <p class="text-lg text-gray-700 leading-relaxed ml-4">
                             Isparta'da piyasada kalıcılığını sürdüren yüksek portföy değerli yatırımcılarla etkin iletişim ve kişiye özel danışmanlık yürüterek Gedik Private müşteri tabanını genişletmek. Bu yatırımcıların, Gedik Yatırım'ın üstün hizmet kalitesi ve kapsamlı finansal ürün yelpazesi sayesinde maksimum fayda sağlamalarını temin etmek.
                         </p>
                     </li>
                     <li class="section-item-card">
-                        <h4 class="text-lg font-semibold text-blue-700 mb-2 flex items-center gap-3">
-                            <i class="ph-fill ph-book-open text-blue-600 text-3xl"></i>
+                        <h4 class="text-lg font-semibold text-blue-700 mb-2 flex items-center gap-2">
+                            <i class="ph-fill ph-chalkboard-teacher text-blue-600 text-2xl"></i>
                             Bireysel Yatırımcı Eğitim ve Bilinçlendirme Faaliyetlerine Liderlik Etme:
                         </h4>
-                        <p class="text-lg text-gray-700 leading-relaxed">
+                        <p class="text-lg text-gray-700 leading-relaxed ml-4">
                             Gedik Yatırım'ın marka bilinirliğini ve geniş finansal ürün yelpazesini vurgulayan, bireysel yatırımcılara yönelik özel eğitim seminerleri, webinarlar ve atölye çalışmaları düzenlenmesinde proaktif görev almak. Özellikle piyasadan çekilen ancak finansal okuryazarlığı artmış olabilecek kitleyi hedefleyerek, Gedik Yatırım'a güven duymalarını sağlamak ve potansiyel nitelikli müşteriler havuzu oluşturmak. Bu etkinliklerde, Gedik Yatırım'ın araştırma ekibinin sunduğu değerleri ve özel portföy yönetimi anlayışını ön plana çıkarmak.
                         </p>
                     </li>
                     <li class="section-item-card">
-                        <h4 class="text-lg font-semibold text-blue-700 mb-2 flex items-center gap-3">
-                            <i class="ph-fill ph-megaphone text-blue-600 text-3xl"></i>
+                        <h4 class="text-lg font-semibold text-blue-700 mb-2 flex items-center gap-2">
+                            <i class="ph-fill ph-calendar-plus text-blue-600 text-2xl"></i>
                             Pazar Geliştirme ve Etkinlik Organizasyonları:
                         </h4>
-                        <p class="text-lg text-gray-700 leading-relaxed">
+                        <p class="text-lg text-gray-700 leading-relaxed ml-4">
                             Gedik Private'ın hedeflediği nitelikli yatırımcı kitlesine yönelik özel davetli etkinlikler, yatırım kulüpleri veya tematik buluşmalar gibi pazar geliştirme faaliyetlerini organize etmek ve yürütmek. Bu sayede, potansiyel Private müşterileriyle doğrudan, samimi ve kaliteli ilişkiler kurarak Gedik Yatırım'ın ayrıcalıklı hizmetlerini tanıtmak.
                         </p>
                     </li>
                     <li class="section-item-card">
-                        <h4 class="text-lg font-semibold text-blue-700 mb-2 flex items-center gap-3">
-                            <i class="ph-fill ph-lightbulb-filament text-blue-600 text-3xl"></i>
+                        <h4 class="text-lg font-semibold text-blue-700 mb-2 flex items-center gap-2">
+                            <i class="ph-fill ph-strategy text-blue-600 text-2xl"></i>
                             Bireysel Yatırımcı İhtiyaçlarına Özel Strateji Geliştirme:
                         </h4>
-                        <p class="text-lg text-gray-700 leading-relaxed">
+                        <p class="text-lg text-gray-700 leading-relaxed ml-4">
                             Veriye dayalı analizleri ve piyasa eğilimlerini takip ederek, mevcut ve potansiyel yatırımcıların dinamik ihtiyaçlarına yönelik kişiselleştirilmiş yatırım stratejileri ve portföy önerileri geliştirmek. Bu sayede, Gedik Private'ın müşteri tabanını hem nicelik hem de nitelik olarak artırma hedefine doğrudan katkıda bulunmak.
                         </p>
                     </li>
@@ -482,5 +530,697 @@
 
     </div>
 
+    <script>
+        // DOM içeriği yüklendikten sonra grafik kodunu çalıştır
+        document.addEventListener('DOMContentLoaded', function() {
+            // Chart.js Datalabels eklentisini kaydet
+            Chart.register(ChartDataLabels);
+
+            // Tüm aylar için etiketler oluştur (2019-01'den 2025-05'e kadar)
+            const generateAllMonths = () => {
+                const months = [];
+                let year = 2019;
+                let month = 1;
+                while (year < 2025 || (year === 2025 && month <= 5)) {
+                    months.push(`${year}-${month < 10 ? '0' + month : month}`);
+                    month++;
+                    if (month > 12) {
+                        month = 1;
+                        year++;
+                    }
+                }
+                return months;
+            };
+            const allMonths = generateAllMonths();
+
+            // Fonksiyon: Eksik verileri doğrusal interpolasyon ile doldurur
+            function interpolateData(allLabels, rawData) {
+                const interpolatedValues = [];
+                // Veri noktalarını ay ve index'e göre sırala
+                const dataPoints = Object.keys(rawData).map(month => ({
+                    month: month,
+                    value: rawData[month],
+                    index: allLabels.indexOf(month)
+                })).sort((a, b) => a.index - b.index);
+
+                for (let i = 0; i < allLabels.length; i++) {
+                    const currentMonth = allLabels[i];
+                    if (rawData[currentMonth] !== undefined) {
+                        interpolatedValues.push(rawData[currentMonth]);
+                    } else {
+                        let prevPoint = null;
+                        let nextPoint = null;
+
+                        // Önceki ve sonraki bilinen veri noktalarını bul
+                        for (let j = 0; j < dataPoints.length; j++) {
+                            if (dataPoints[j].index <= i) {
+                                prevPoint = dataPoints[j];
+                            }
+                            if (dataPoints[j].index >= i && nextPoint === null) {
+                                nextPoint = dataPoints[j];
+                            }
+                        }
+
+                        // Eğer hem önceki hem sonraki nokta varsa interpolasyon yap
+                        if (prevPoint && nextPoint && prevPoint.index !== nextPoint.index) {
+                            const ratio = (i - prevPoint.index) / (nextPoint.index - prevPoint.index);
+                            const interpolated = prevPoint.value + (nextPoint.value - prevPoint.value) * ratio;
+                            interpolatedValues.push(interpolated);
+                        } else if (prevPoint) { // Sadece önceki nokta varsa, önceki noktanın değerini kullan
+                            interpolatedValues.push(prevPoint.value);
+                        } else if (nextPoint) { // Sadece sonraki nokta varsa, sonraki noktanın değerini kullan
+                            interpolatedValues.push(nextPoint.value);
+                        } else { // Hiç nokta yoksa null ekle (bu senaryo nadir olmalı)
+                            interpolatedValues.push(null);
+                        }
+                    }
+                }
+                return interpolatedValues;
+            }
+
+            // --- Grafik 1: Pay Senedi Grafiği ---
+            const paySenediCtx = document.getElementById('paySenediChart').getContext('2d');
+
+            // Pay Senedi Ham Verileri (Görselden ve metinsel çıkarımlardan yaklaşılan değerler)
+            const rawPaySenediPortfolioData = {
+                '2019-01': 200, '2019-03': 250, '2019-05': 300, '2019-07': 400, '2019-09': 500, '2019-11': 600,
+                '2020-01': 700, '2020-03': 800, '2020-05': 900, '2020-07': 950, '2020-09': 1000, '2020-11': 1100,
+                '2021-01': 1200, '2021-03': 1300, '2021-05': 1400, '2021-07': 1500, '2021-09': 1600, '2021-11': 1700,
+                '2022-01': 1750, '2022-03': 1780, '2022-05': 1800, // End of 'Bekleme' period, starting point for 'Ani Sıçrama' as 1.8B
+                '2022-07': 3000, '2022-09': 4500, '2022-11': 6000, // Rapid growth
+                '2023-01': 6800, '2023-03': 7100, '2023-05': 7261, // Peak of 'Ani Sıçrama'
+                '2023-07': 7848, // Start of 'Yatırımcı Çıkışı' for portfolio
+                '2023-09': 7750, '2023-11': 7650, '2024-01': 7550, '2024-03': 7600, '2024-05': 7689, // Stabilizing towards 7.689B
+                '2024-07': 7689, '2024-09': 7689, '2024-11': 7689, '2025-01': 7689, '2025-03': 7689, '2025-05': 7689 // Stabilization
+            };
+
+            const rawPaySenediInvestorData = {
+                '2019-01': 200, '2019-03': 204, '2019-05': 208, '2019-07': 247, '2019-09': 364, '2019-11': 406,
+                '2020-01': 590, '2020-03': 724, '2020-05': 942, '2020-07': 928, '2020-09': 865, '2020-11': 927,
+                '2021-01': 1000, '2021-03': 1200, '2021-05': 1400, '2021-07': 1600, '2021-09': 1700, '2021-11': 1800, // Smooth increase up to ~1.8K before 2022
+                '2022-01': 1845, '2022-03': 1845, '2022-05': 1845, // End of Bekleme - Durağan Dönem
+                '2022-07': 5000, '2022-09': 15000, '2022-11': 30000, // Surge
+                '2023-01': 38000, '2023-03': 45000, '2023-05': 48896, // Peak
+                '2023-07': 46000, '2023-09': 44000, '2023-11': 43000,
+                '2024-01': 41680, '2024-03': 41680, '2024-05': 41680, // Stabilized
+                '2024-07': 41680, '2024-09': 41680, '2024-11': 41680, '2025-01': 41680, '2025-03': 41680, '2025-05': 41680 // Stabilization
+            };
+
+            const paySenediPortfolioValues = interpolateData(allMonths, rawPaySenediPortfolioData);
+            const paySenediInvestorCounts = interpolateData(allMonths, rawPaySenediInvestorData);
+
+            // Önemli noktaları ve stillerini belirle (dönem bitişlerine göre)
+            const paySenediHighlightPoints = {
+                '2021-11': { style: 'circle', color: '#DC2626', labelOffset: 20, align: 'top', anchor: 'end', displayLabel: true, labelText: 'Giriş Dönemi', isLarge: true }, // Kırmızı ve daha büyük
+                '2022-05': { style: 'triangle', color: '#F97316', labelOffset: 20, align: 'bottom', anchor: 'center', displayLabel: true, labelText: 'Bekleme Dönemi' }, // Turuncu
+                '2023-05': { style: 'star', color: '#22C55E', labelOffset: 30, align: 'top', anchor: 'start', displayLabel: true, isPeak: true, labelText: 'Zirve Dönemi', isLarge: true }, // Yeşil ve daha büyük, isPeak ile ekstra vurgu
+                '2025-05': { style: 'rectRot', color: '#9333EA', labelOffset: 20, align: 'top', anchor: 'end', displayLabel: true, labelText: 'Stabilizasyon Dönemi' } // Mor
+            };
+
+            const paySenediPointStyles = allMonths.map(month => paySenediHighlightPoints[month] ? paySenediHighlightPoints[month].style : 'circle');
+            const paySenediPointBackgroundColors = allMonths.map(month => paySenediHighlightPoints[month] ? paySenediHighlightPoints[month].color : '#000000');
+            // Boyutlandırma mantığını güncelledik: isLarge varsa 15, isPeak varsa 25, default 4
+            const paySenediPointRadii = allMonths.map(month => {
+                if (paySenediHighlightPoints[month]) {
+                    if (paySenediHighlightPoints[month].isPeak) return 25; // Zirve için en büyük
+                    if (paySenediHighlightPoints[month].isLarge) return 15; // Giriş için daha büyük
+                    return 10; // Diğer vurgulu noktalar için biraz daha büyük
+                }
+                return 4; // Normal noktalar
+            });
+            // Kenarlık kalınlığını boyutlara göre ayarladık
+            const paySenediPointBorderWidths = allMonths.map(month => {
+                if (paySenediHighlightPoints[month]) {
+                    if (paySenediHighlightPoints[month].isPeak) return 8; // Zirve için en kalın
+                    if (paySenediHighlightPoints[month].isLarge) return 4; // Giriş için kalın
+                    return 2; // Diğer vurgulu noktalar için
+                }
+                return 1.5;
+            });
+
+            const paySenediChart = new Chart(paySenediCtx, {
+                type: 'bar',
+                data: {
+                    labels: allMonths,
+                    datasets: [
+                        {
+                            label: 'Portföy Değeri (Milyon TL)',
+                            data: paySenediPortfolioValues,
+                            backgroundColor: '#A0AEC0', // Gri tonları
+                            borderColor: '#718096',
+                            borderWidth: 1,
+                            yAxisID: 'y',
+                            borderRadius: 3,
+                            barPercentage: 0.8,
+                            categoryPercentage: 0.85,
+                            order: 2, // This ensures bars are rendered *before* the line
+                            datalabels: {
+                                display: function(context) {
+                                    const index = context.dataIndex;
+                                    // Sadece yılın başı, ortası (Haziran/Temmuz) ve dönem bitişlerinde göster
+                                    const month = parseInt(context.chart.data.labels[index].split('-')[1]);
+                                    if (month === 1 || month === 7 || (paySenediHighlightPoints[context.chart.data.labels[index]])) {
+                                        return context.dataset.data[index] > 0;
+                                    }
+                                    return false;
+                                },
+                                anchor: 'end',
+                                align: 'top',
+                                offset: 2,
+                                color: '#4A5568',
+                                font: {
+                                    size: 9,
+                                    weight: 'normal'
+                                },
+                                formatter: function(value) {
+                                    return value !== null ? new Intl.NumberFormat('tr-TR', { maximumFractionDigits: 0 }).format(value) : '';
+                                }
+                            }
+                        },
+                        {
+                            label: 'Yatırımcı Sayısı (Adet)',
+                            data: paySenediInvestorCounts,
+                            type: 'line',
+                            borderColor: '#000000', // Siyah çizgi
+                            backgroundColor: 'transparent',
+                            fill: false,
+                            yAxisID: 'y1',
+                            tension: 0.2, // Eğri çizgi
+                            pointRadius: paySenediPointRadii,
+                            pointBackgroundColor: paySenediPointBackgroundColors,
+                            pointBorderColor: function(context) { // KENARLIK RENGİ DÜZELTİLDİ
+                                const currentMonth = context.chart.data.labels[context.dataIndex];
+                                if (paySenediHighlightPoints[currentMonth]) {
+                                    return paySenediHighlightPoints[currentMonth].color; // Aynı renk kenarlık
+                                }
+                                return '#fff'; // Default beyaz kenarlık
+                            },
+                            pointBorderWidth: paySenediPointBorderWidths,
+                            pointStyle: paySenediPointStyles,
+                            borderWidth: 2, // Çizgi kalınlığı
+                            order: 1,
+                            datalabels: {
+                                display: true, // All datalabels will be potentially displayed
+                                anchor: function(context) {
+                                    const currentMonth = context.chart.data.labels[context.dataIndex];
+                                    if (paySenediHighlightPoints[currentMonth]) {
+                                        return paySenediHighlightPoints[currentMonth].anchor;
+                                    }
+                                    return 'end'; // Default anchor
+                                },
+                                align: function(context) {
+                                    const currentMonth = context.chart.data.labels[context.dataIndex];
+                                    if (paySenediHighlightPoints[currentMonth]) {
+                                        return paySenediHighlightPoints[currentMonth].align;
+                                    }
+                                    // Dynamic alignment for non-highlighted points to avoid overlap
+                                    const index = context.dataIndex;
+                                    return (index % 4 === 0) ? 'top' : 'bottom';
+                                },
+                                offset: function(context) {
+                                    const currentMonth = context.chart.data.labels[context.dataIndex];
+                                    if (paySenediHighlightPoints[currentMonth]) {
+                                        return paySenediHighlightPoints[currentMonth].labelOffset;
+                                    }
+                                    return 5;
+                                },
+                                color: function(context) {
+                                    const currentMonth = context.chart.data.labels[context.dataIndex];
+                                    if (paySenediHighlightPoints[currentMonth]) {
+                                        return paySenediHighlightPoints[currentMonth].color;
+                                    }
+                                    return '#000000'; // Default datalabel rengi
+                                },
+                                font: function(context) {
+                                    const currentMonth = context.chart.data.labels[context.dataIndex];
+                                    if (paySenediHighlightPoints[currentMonth]) {
+                                        return { size: paySenediHighlightPoints[currentMonth].isPeak ? 16 : 12, weight: 'bolder' }; // Peak: 16 (maximized), Others: 12, Bolder weight
+                                    }
+                                    return { size: 9, weight: 'normal' };
+                                },
+                                formatter: function(value, context) {
+                                    const currentMonth = context.chart.data.labels[context.dataIndex];
+                                    if (paySenediHighlightPoints[currentMonth]) {
+                                        return paySenediHighlightPoints[currentMonth].labelText + '\n' + new Intl.NumberFormat('tr-TR', { maximumFractionDigits: 0 }).format(value);
+                                    }
+                                    // Display for every 6th month or specific months for readability
+                                    const month = parseInt(currentMonth.split('-')[1]);
+                                    if (month === 1 || month === 7) { // Jan and July
+                                        return new Intl.NumberFormat('tr-TR', { maximumFractionDigits: 0 }).format(value);
+                                    }
+                                    return '';
+                                }
+                            }
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        tooltip: {
+                            mode: 'index',
+                            intersect: false,
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.dataset.label || '';
+                                    if (label) {
+                                        label += ': ';
+                                    }
+                                    if (context.dataset.label.includes('Portföy Değeri')) {
+                                        label += new Intl.NumberFormat('tr-TR', { style: 'decimal', minimumFractionDigits: 0 }).format(context.raw) + ' Milyon TL';
+                                    } else {
+                                        label += new Intl.NumberFormat('tr-TR', { style: 'decimal', minimumFractionDigits: 0 }).format(context.raw) + ' Adet';
+                                    }
+                                    return label;
+                                }
+                            }
+                        },
+                        legend: {
+                            display: true, // Açıklamaları göster
+                            position: 'top',
+                            labels: {
+                                font: {
+                                    family: 'Open Sans',
+                                    size: 12
+                                },
+                                color: '#374151'
+                            }
+                        },
+                        title: {
+                            display: false,
+                        },
+                        datalabels: {
+                            // Genel ayarlar dataset bazında ezilebilir
+                        }
+                    },
+                    scales: {
+                        x: {
+                            title: {
+                                display: false,
+                            },
+                            ticks: {
+                                autoSkip: false,
+                                maxRotation: 90,
+                                minRotation: 90,
+                                font: {
+                                    family: 'Open Sans',
+                                    size: 10
+                                },
+                                callback: function(val, index) {
+                                    const label = this.getLabelForValue(val);
+                                    // Yılın başı veya her 6 ayda bir etiketi göster
+                                    const month = parseInt(label.split('-')[1]);
+                                    const year = parseInt(label.split('-')[0]);
+                                    if (month === 1 || month === 7 || (year % 2 === 0 && month === 1) || (year === 2025 && month === 5)) {
+                                        return label;
+                                    }
+                                    return '';
+                                },
+                                color: '#4A5568'
+                            },
+                            grid: {
+                                drawOnChartArea: false,
+                                drawBorder: false,
+                            }
+                        },
+                        y: {
+                            type: 'linear',
+                            position: 'left',
+                            title: {
+                                display: true,
+                                text: 'Portföy Değeri (Milyon TL)',
+                                font: {
+                                    size: 13,
+                                    family: 'Open Sans',
+                                    weight: 'bold'
+                                },
+                                color: '#4A5568'
+                            },
+                            grid: {
+                                drawOnChartArea: true,
+                                color: '#E2E8F0',
+                                drawBorder: false,
+                            },
+                            ticks: {
+                                callback: function(value) {
+                                   return new Intl.NumberFormat('tr-TR', { minimumFractionDigits: 0 }).format(value);
+                                },
+                                font: {
+                                    family: 'Open Sans',
+                                    size: 11
+                                },
+                                color: '#4A5568'
+                            },
+                            min: 0,
+                            max: 8500, // Maksimum değer görseldeki gibi ayarlandı
+                        },
+                        y1: {
+                            type: 'linear',
+                            position: 'right',
+                            title: {
+                                display: true,
+                                text: 'Yatırımcı Sayısı (Adet)',
+                                font: {
+                                    size: 13,
+                                    family: 'Open Sans',
+                                    weight: 'bold'
+                                },
+                                color: '#4A5568'
+                            },
+                            grid: {
+                                drawOnChartArea: false,
+                                drawBorder: false,
+                            },
+                            ticks: {
+                                callback: function(value) {
+                                    return new Intl.NumberFormat('tr-TR', { minimumFractionDigits: 0 }).format(value);
+                                },
+                                font: {
+                                    family: 'Open Sans',
+                                    size: 11
+                                },
+                                color: '#4A5568'
+                            },
+                            min: 0,
+                            max: 55000 // Maksimum değer görseldeki gibi ayarlandı
+                        }
+                    }
+                }
+            });
+
+            // --- Grafik 2: Yatırım Fonu Grafiği ---
+            const yatirimFonuCtx = document.getElementById('yatirimFonuChart').getContext('2d');
+
+            // Yatırım Fonu Ham Verileri (Görselden ve metinsel çıkarımlardan yaklaşılan değerler)
+            const rawYatirimFonuPortfolioData = {
+                '2019-01': 150, '2019-03': 165, '2019-05': 180, '2019-07': 190, '2019-09': 200, '2019-11': 210,
+                '2020-01': 215, '2020-03': 216, '2020-05': 216, // End of Erken Gelişim
+                '2020-07': 250, '2020-09': 300, '2020-11': 350,
+                '2021-01': 400, '2021-03': 450, '2021-05': 500, '2021-07': 505, '2021-09': 506, '2021-11': 507,
+                '2022-01': 508, '2022-03': 508, '2022-05': 508, // End of Konsolidasyon
+                '2022-07': 800, '2022-09': 1200, '2022-11': 1600,
+                '2023-01': 1900, '2023-03': 2200, '2023-05': 2300, '2023-07': 2350, '2023-09': 2380, '2023-11': 2404, // End of Hızlı Büyüme
+                '2024-01': 3000, '2024-03': 3800, '2024-05': 4500, '2024-07': 5000, '2024-09': 5500, '2024-11': 6000,
+                '2025-01': 6100, '2025-03': 6200, '2025-05': 6265 // End of Zirve Yaklaşımı
+            };
+
+            const rawYatirimFonuInvestorData = {
+                '2019-01': 3308, '2019-03': 5000, '2019-05': 7000, '2019-07': 9000, '2019-09': 11000, '2019-11': 13000,
+                '2020-01': 15000, '2020-03': 16000, '2020-05': 16673, // End of Erken Gelişim
+                '2020-07': 16800, '2020-09': 16900, '2020-11': 16950,
+                '2021-01': 17000, '2021-03': 17020, '2021-05': 17030, '2021-07': 17032, '2021-09': 17033, '2021-11': 17034,
+                '2022-01': 17034, '2022-03': 17034, '2022-05': 17034, // End of Konsolidasyon
+                '2022-07': 18000, '2022-09': 20000, '2022-11': 22000,
+                '2023-01': 23000, '2023-03': 24000, '2023-05': 25000, '2023-07': 25500, '2023-09': 25800, '2023-11': 25957, // End of Hızlı Büyüme
+                '2024-01': 26500, '2024-03': 27000, '2024-05': 27500, '2024-07': 28000, '2024-09': 28300, '2024-11': 28500,
+                '2025-01': 28600, '2025-03': 28650, '2025-05': 28703 // End of Zirve Yaklaşımı
+            };
+
+            const yatirimFonuPortfolioValues = interpolateData(allMonths, rawYatirimFonuPortfolioData);
+            const yatirimFonuInvestorCounts = interpolateData(allMonths, rawYatirimFonuInvestorData);
+
+            // Önemli noktaları ve stillerini belirle
+            const yatirimFonuHighlightPoints = {
+                '2020-05': { style: 'circle', color: '#DC2626', labelOffset: 20, align: 'top', anchor: 'end', displayLabel: true, labelText: 'Erken Gelişim Sonu' }, // Kırmızı
+                '2022-05': { style: 'triangle', color: '#F59E0B', labelOffset: 20, align: 'bottom', anchor: 'center', displayLabel: true, labelText: 'Konsolidasyon Sonu' }, // Turuncu
+                '2023-11': { style: 'star', color: '#22C55E', labelOffset: 30, align: 'top', anchor: 'start', displayLabel: true, isPeak: true, labelText: 'Hızlı Büyüme Zirvesi' }, // Yeşil ve isPeak ile ekstra vurgu
+                '2025-05': { style: 'rectRot', color: '#9333EA', labelOffset: 20, align: 'top', anchor: 'end', displayLabel: true, labelText: 'Stabil Büyüme Sonu' } // Mor
+            };
+
+            const yatirimFonuPointStyles = allMonths.map(month => yatirimFonuHighlightPoints[month] ? yatirimFonuHighlightPoints[month].style : 'circle');
+            // Yatırım Fonu Hızlı Büyüme Zirvesi için arka plan rengini düzelttik
+            const yatirimFonuPointBackgroundColors = allMonths.map(month => yatirimFonuHighlightPoints[month] ? yatirimFonuHighlightPoints[month].color : '#000000');
+            const yatirimFonuPointRadii = allMonths.map(month => {
+                if (yatirimFonuHighlightPoints[month]) {
+                    if (yatirimFonuHighlightPoints[month].isPeak) return 25; // Zirve için en büyük
+                    return 15; // Diğer vurgulu noktalar için
+                }
+                return 4; // Normal noktalar
+            });
+            const yatirimFonuPointBorderWidths = allMonths.map(month => {
+                if (yatirimFonuHighlightPoints[month]) {
+                    if (yatirimFonuHighlightPoints[month].isPeak) return 8; // Zirve için en kalın
+                    return 4; // Diğer vurgulu noktalar için
+                }
+                return 1.5;
+            });
+
+            const yatirimFonuChart = new Chart(yatirimFonuCtx, {
+                type: 'bar',
+                data: {
+                    labels: allMonths,
+                    datasets: [
+                        {
+                            label: 'Portföy Değeri (Milyon TL)',
+                            data: yatirimFonuPortfolioValues,
+                            backgroundColor: '#A0AEC0', // Gri tonları
+                            borderColor: '#718096',
+                            borderWidth: 1,
+                            yAxisID: 'y',
+                            borderRadius: 3,
+                            barPercentage: 0.8,
+                            categoryPercentage: 0.85,
+                            order: 2,
+                            datalabels: {
+                                display: function(context) {
+                                    const index = context.dataIndex;
+                                    const month = parseInt(context.chart.data.labels[index].split('-')[1]);
+                                    if (month === 1 || month === 7 || (yatirimFonuHighlightPoints[context.chart.data.labels[index]])) {
+                                        return context.dataset.data[index] > 0;
+                                    }
+                                    return false;
+                                },
+                                anchor: 'end',
+                                align: 'top',
+                                offset: 2,
+                                color: '#4A5568',
+                                font: {
+                                    size: 9,
+                                    weight: 'normal'
+                                },
+                                formatter: function(value) {
+                                    return value !== null ? new Intl.NumberFormat('tr-TR', { maximumFractionDigits: 0 }).format(value) : '';
+                                }
+                            }
+                        },
+                        {
+                            label: 'Yatırımcı Sayısı (Adet)',
+                            data: yatirimFonuInvestorCounts,
+                            type: 'line',
+                            borderColor: '#000000',
+                            backgroundColor: 'transparent',
+                            fill: false,
+                            yAxisID: 'y1',
+                            tension: 0.2,
+                            pointRadius: yatirimFonuPointRadii,
+                            pointBackgroundColor: yatirimFonuPointBackgroundColors,
+                            pointBorderColor: function(context) { // KENARLIK RENGİ DÜZELTİLDİ
+                                const currentMonth = context.chart.data.labels[context.dataIndex];
+                                if (yatirimFonuHighlightPoints[currentMonth]) {
+                                    return yatirimFonuHighlightPoints[currentMonth].color; // Aynı renk kenarlık
+                                }
+                                return '#fff'; // Default beyaz kenarlık
+                            },
+                            pointBorderWidth: yatirimFonuPointBorderWidths,
+                            pointStyle: yatirimFonuPointStyles,
+                            borderWidth: 2,
+                            order: 1,
+                            datalabels: {
+                                display: true, // All datalabels will be potentially displayed
+                                anchor: function(context) {
+                                    const currentMonth = context.chart.data.labels[context.dataIndex];
+                                    if (yatirimFonuHighlightPoints[currentMonth]) {
+                                        return yatirimFonuHighlightPoints[currentMonth].anchor;
+                                    }
+                                    return 'end';
+                                },
+                                align: function(context) {
+                                    const currentMonth = context.chart.data.labels[context.dataIndex];
+                                    if (yatirimFonuHighlightPoints[currentMonth]) {
+                                        return yatirimFonuHighlightPoints[currentMonth].align;
+                                    }
+                                    const index = context.dataIndex;
+                                    return (index % 4 === 0) ? 'top' : 'bottom';
+                                },
+                                offset: function(context) {
+                                    const currentMonth = context.chart.data.labels[context.dataIndex];
+                                    if (yatirimFonuHighlightPoints[currentMonth]) {
+                                        return yatirimFonuHighlightPoints[currentMonth].labelOffset;
+                                    }
+                                    return 5;
+                                },
+                                color: function(context) {
+                                    const currentMonth = context.chart.data.labels[context.dataIndex];
+                                    if (yatirimFonuHighlightPoints[currentMonth]) {
+                                        return yatirimFonuHighlightPoints[currentMonth].color;
+                                    }
+                                    return '#000000';
+                                },
+                                font: function(context) {
+                                    const currentMonth = context.chart.data.labels[context.dataIndex];
+                                    if (yatirimFonuHighlightPoints[currentMonth]) {
+                                        return { size: yatirimFonuHighlightPoints[currentMonth].isPeak ? 16 : 12, weight: 'bolder' };
+                                    }
+                                    return { size: 9, weight: 'normal' };
+                                },
+                                formatter: function(value, context) {
+                                    const currentMonth = context.chart.data.labels[context.dataIndex];
+                                    if (yatirimFonuHighlightPoints[currentMonth]) {
+                                        return yatirimFonuHighlightPoints[currentMonth].labelText + '\n' + new Intl.NumberFormat('tr-TR', { maximumFractionDigits: 0 }).format(value);
+                                    }
+                                    const month = parseInt(currentMonth.split('-')[1]);
+                                    if (month === 1 || month === 7) { // Jan and July
+                                        return new Intl.NumberFormat('tr-TR', { maximumFractionDigits: 0 }).format(value);
+                                    }
+                                    return '';
+                                }
+                            }
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        tooltip: {
+                            mode: 'index',
+                            intersect: false,
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.dataset.label || '';
+                                    if (label) {
+                                        label += ': ';
+                                    }
+                                    if (context.dataset.label.includes('Portföy Değeri')) {
+                                        label += new Intl.NumberFormat('tr-TR', { style: 'decimal', minimumFractionDigits: 0 }).format(context.raw) + ' Milyon TL';
+                                    } else {
+                                        label += new Intl.NumberFormat('tr-TR', { style: 'decimal', minimumFractionDigits: 0 }).format(context.raw) + ' Adet';
+                                    }
+                                    return label;
+                                }
+                            }
+                        },
+                        legend: {
+                            display: true,
+                            position: 'top',
+                            labels: {
+                                font: {
+                                    family: 'Open Sans',
+                                    size: 12
+                                },
+                                color: '#374151'
+                            }
+                        },
+                        title: {
+                            display: false,
+                        },
+                        datalabels: {
+                        }
+                    },
+                    scales: {
+                        x: {
+                            title: {
+                                display: false,
+                            },
+                            ticks: {
+                                autoSkip: false,
+                                maxRotation: 90,
+                                minRotation: 90,
+                                font: {
+                                    family: 'Open Sans',
+                                    size: 10
+                                },
+                                callback: function(val, index) {
+                                    const label = this.getLabelForValue(val);
+                                    const year = parseInt(label.split('-')[0]);
+                                    const month = parseInt(label.split('-')[1]);
+                                    if (month === 1 || month === 7 || (year % 2 === 0 && month === 1) || (year === 2025 && month === 5)) {
+                                        return label;
+                                    }
+                                    return '';
+                                },
+                                color: '#4A5568'
+                            },
+                            grid: {
+                                drawOnChartArea: false,
+                                drawBorder: false,
+                            }
+                        },
+                        y: {
+                            type: 'linear',
+                            position: 'left',
+                            title: {
+                                display: true,
+                                text: 'Portföy Değeri (Milyon TL)',
+                                font: {
+                                    size: 13,
+                                    family: 'Open Sans',
+                                    weight: 'bold'
+                                },
+                                color: '#4A5568'
+                            },
+                            grid: {
+                                drawOnChartArea: true,
+                                color: '#E2E8F0',
+                                drawBorder: false,
+                            },
+                            ticks: {
+                                callback: function(value) {
+                                   return new Intl.NumberFormat('tr-TR', { minimumFractionDigits: 0 }).format(value);
+                                },
+                                font: {
+                                    family: 'Open Sans',
+                                    size: 11
+                                },
+                                color: '#4A5568'
+                            },
+                            min: 0,
+                            max: 7000, // Maksimum değer görseldeki gibi ayarlandı
+                        },
+                        y1: {
+                            type: 'linear',
+                            position: 'right',
+                            title: {
+                                display: true,
+                                text: 'Yatırımcı Sayısı (Adet)',
+                                font: {
+                                    size: 13,
+                                    family: 'Open Sans',
+                                    weight: 'bold'
+                                },
+                                color: '#4A5568'
+                            },
+                            grid: {
+                                drawOnChartArea: false,
+                                drawBorder: false,
+                            },
+                            ticks: {
+                                callback: function(value) {
+                                    return new Intl.NumberFormat('tr-TR', { minimumFractionDigits: 0 }).format(value);
+                                },
+                                font: {
+                                    family: 'Open Sans',
+                                    size: 11
+                                },
+                                color: '#4A5568'
+                            },
+                            min: 0,
+                            max: 30000 // Maksimum değer görseldeki gibi ayarlandı
+                        }
+                    }
+                }
+            });
+
+             // Grafikleri yeniden boyutlandırma işlevi
+             function resizeCharts() {
+                if (paySenediChart) paySenediChart.resize();
+                if (yatirimFonuChart) yatirimFonuChart.resize();
+            }
+
+            // Ekran boyutu değiştiğinde grafikleri yeniden boyutlandır
+            window.addEventListener('resize', resizeCharts);
+        });
+    </script>
 </body>
 </html>
