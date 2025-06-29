@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Isparta İli Bireysel Yatırımcı Dinamikleri - Gedik Yatırım Private</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Open Sans Font Family (Bold, Semi-Bold, Regular weights) -->
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    <!-- Phosphor Icons CDN for modern, clean icons -->
+    <script src="https://unpkg.com/@phosphor-icons/web@2.1.1/dist/phosphor.js"></script>
+    <style>
+        body {
+            font-family: 'Open Sans', sans-serif; /* Font 'Open Sans' olarak ayarlandı */
+            background-color: #F8FAFC; /* Çok açık gri, premium bir arka plan */
+            color: #1F2937; /* Koyu gri/lacivert, ana metin rengi */
+        }
+        /* Kurumsal ve premium gradient arka plan */
+        .hero-gradient {
+            background: linear-gradient(135deg, #0D47A1 0%, #1976D2 100%); /* Derin mavi tonları */
+        }
+        /* Küçük animasyonlar için */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fadeIn {
+            animation: fadeIn 0.8s ease-out forwards;
+        }
+        /* Tablo stilini iyileştirme */
+        .styled-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            margin-top: 2rem; /* Daha fazla boşluk */
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); /* Daha belirgin gölge */
+            border-radius: 1rem; /* Daha yuvarlak köşeler */
+            overflow: hidden;
+            background-color: #ffffff; /* Beyaz arka plan */
+        }
+        .styled-table th, .styled-table td {
+            padding: 1.25rem 1.75rem; /* Daha geniş padding */
+            text-align: left;
+            border-bottom: 1px solid #E5E7EB; /* gray-200 */
+        }
+        .styled-table th {
+            background-color: #F9FAFB; /* gray-50, hafif bir ayrım */
+            font-weight: 700; /* Daha kalın */
+            color: #4B5563; /* gray-700 */
+            text-transform: uppercase;
+            font-size: 0.9rem; /* Biraz daha büyük font */
+            letter-spacing: 0.05em; /* Hafif harf aralığı */
+        }
+        .styled-table tbody tr:nth-child(even) {
+            background-color: #FDFEFE; /* Çok hafif alternatif satır rengi */
+        }
+        .styled-table tbody tr:hover {
+            background-color: #F3F4F6; /* gray-100 on hover */
+        }
+        .styled-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        /* Liste elemanları için daha rafine border */
+        .section-item-card {
+            background-color: #ffffff; /* Beyaz kart */
+            padding: 1.75rem; /* Daha fazla padding */
+            border-radius: 0.75rem;
+            /* Shadow adjusted for more depth */
+            box-shadow: 0 8px 18px -5px rgba(0, 0, 0, 0.2), 0 3px 6px -2px rgba(0, 0, 0, 0.1); /* Daha belirgin gölge */
+            border-left: 8px solid #1A73E8; /* Kalınlaştırılmış kurumsal mavi kenar */
+            border: 1px solid #E5E7EB; /* İnce kenarlık eklendi */
+            transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+        }
+        .section-item-card:hover {
+            transform: translateY(-7px); /* Hafif yukarı kalkma efekti */
+            box-shadow: 0 14px 25px -7px rgba(0, 0, 0, 0.3), 0 6px 10px -3px rgba(0, 0, 0, 0.15); /* Hover'da daha belirgin gölge */
+        }
+
+        .responsive-image {
+            max-width: 100%;
+            height: auto;
+            border-radius: 0.75rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            border: 1px solid #E5E7EB; /* Görsel çevresine ince kenarlık */
+        }
+        .source-text-image {
+            font-size: 0.875rem; /* Slightly larger for clarity */
+            color: #6B7280; /* gray-500 */
+            text-align: right;
+            margin-top: 0.5rem;
+            padding-right: 0.5rem;
+        }
+
+        /* PDF çıktısı için özel stiller */
+        @media print {
+            body {
+                background-color: #ffffff; /* PDF için beyaz arka plan */
+                font-size: 11pt; /* Yazdırırken daha okunabilir font boyutu */
+                margin: 0;
+                padding: 0;
+            }
+            .min-h-screen {
+                min-height: auto; /* PDF'te ekran yüksekliği zorlamasını kaldır */
+            }
+            .hero-gradient, footer {
+                box-shadow: none !important; /* PDF'te gölgeleri kaldır */
+            }
+            .container, main {
+                width: 100%;
+                max-width: none;
+                padding: 0 1cm; /* PDF kenar boşlukları için */
+            }
+            section {
+                page-break-inside: avoid; /* Bölümlerin sayfa ortasında bölünmesini engelle */
+                page-break-after: always; /* Her bölümden sonra yeni sayfa başlat */
+                box-shadow: none !important; /* PDF'te kart gölgelerini kaldır */
+                border: none !important; /* PDF'te kenarlıkları kaldır */
+                padding: 0.5cm 0 !important; /* PDF'te daha az padding */
+            }
+            .styled-table, .section-item-card {
+                page-break-inside: avoid; /* Tabloların ve kartların bölünmesini engelle */
+            }
+            .responsive-image {
+                page-break-inside: avoid; /* Görselin bölünmesini engelle */
+                max-width: 90%; /* PDF'te görseli biraz küçültme */
+            }
+            h1, h2, h3, h4 {
+                page-break-after: avoid; /* Başlıktan sonra hemen sayfa sonu gelmesini engelle */
+            }
+            ul, ol {
+                page-break-inside: avoid;
+            }
+            /* İlk ve son sayfanın özel stilleri */
+            header {
+                page-break-after: always; /* Başlık sayfasından sonra her zaman yeni sayfa */
+            }
+            footer {
+                page-break-before: always; /* Alt bilgi sayfasından önce her zaman yeni sayfa */
+            }
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <!-- Ana Konteyner -->
+    <div class="min-h-screen flex flex-col items-center py-16 px-4 sm:px-8 lg:px-12">
+
+        <!-- Başlık Bölümü (Hero Section) -->
+        <header class="w-full max-w-7xl mx-auto rounded-3xl overflow-hidden shadow-2xl mb-16 hero-gradient animate-fadeIn" style="animation-delay: 0.1s;">
+            <div class="relative py-20 px-8 text-center text-white">
+                <h1 class="text-5xl sm:text-6xl lg:text-7xl font-black leading-tight tracking-tight mb-4">
+                    Isparta İli Bireysel Yatırımcı Dinamikleri
+                </h1>
+                <p class="text-xl sm:text-2xl lg:text-3xl font-light opacity-90">
+                    Gedik Yatırım Private İçin Stratejik Fırsatlar (2019-2025 Analizi)
+                </p>
+                <div class="mt-10">
+                    <span class="inline-block bg-white text-blue-800 text-lg font-semibold px-8 py-4 rounded-full shadow-lg">
+                        Kapsamlı Piyasa Analizi ve Stratejik Öneriler
+                    </span>
+                </div>
+            </div>
+        </header>
+
+        <!-- İçerik Alanı -->
+        <main class="w-full max-w-7xl mx-auto space-y-16">
+
+            <!-- Giriş ve Analizin Amacı Bölümü -->
+            <section class="bg-white p-10 rounded-2xl shadow-xl animate-fadeIn" style="animation-delay: 0.3s;">
+                <h2 class="text-3xl sm:text-4xl font-extrabold text-gray-800 mb-6 border-b-2 border-blue-600 pb-4">
+                    Giriş ve Analizin Amacı
+                </h2>
+                <p class="text-lg text-gray-700 leading-relaxed mb-6">
+                    Bu rapor, <strong class="font-bold text-blue-700">Isparta ilindeki bireysel yatırımcı davranışlarını ve piyasa dinamiklerini</strong>, hem pay senedi (hisse senedi) hem de yatırım fonları özelinde <strong class="font-bold text-blue-700">2019-2025 dönemi verileriyle derinlemesine analiz etmektedir</strong>.
+                </p>
+                <p class="text-lg text-gray-700 leading-relaxed">
+                    Amacımız, Isparta pazarındaki yatırımcı profilindeki değişimleri, ortaya çıkan potansiyel büyüme alanlarını ve Gedik Yatırım gibi sektörde köklü bir geçmişe, güçlü marka bilinirliğine ve bireysel portföy yönetimi alanında lider bir konumda bulunan <strong class="font-bold text-blue-700">stratejik fırsatları netleştirmektir</strong>.
+                </p>
+            </section>
+
+            <!-- 1. Isparta Bireysel Pay Senedi Yatırımcı Analizi -->
+            <section class="bg-white p-10 rounded-2xl shadow-xl animate-fadeIn" style="animation-delay: 0.5s;">
+                <h2 class="text-3xl sm:text-4xl font-extrabold text-gray-800 mb-6 border-b-2 border-blue-600 pb-4">
+                    1. Isparta Bireysel Pay Senedi Yatırımcı Analizi
+                </h2>
+
+                <!-- Grafik Başlığı -->
+                <h3 class="text-xl sm:text-2xl font-bold text-gray-700 mb-4">
+                    Grafik 1: Isparta İli Bireysel Pay Senedi Yatırımcı Sayısı ve Portföy Büyüklüğü (2019-2025)
+                </h3>
+                <!-- Pay Senedi Grafiği -->
+                <div class="mb-2 flex justify-center">
+                    <img src="https://i.hizliresim.com/npacbhb.JPG"
+                         alt="Isparta İli Bireysel Pay Senedi Yatırımcı Sayısı ve Portföy Büyüklüğü Grafiği"
+                         class="responsive-image">
+                </div>
+                <p class="source-text-image">Kaynak: MKK</p>
+
+
+                <!-- Alt Bölüm Başlığı -->
+                <h3 class="text-xl sm:text-2xl font-bold text-gray-700 mb-5 mt-8">
+                    1.1 Zamana Göre Gelişim ve Çıkarımlar
+                </h3>
+                <div class="space-y-6">
+                    <div class="section-item-card">
+                        <h4 class="text-lg font-semibold text-blue-700 mb-2">A. Giriş Dönemi (2019-2021):</h4>
+                        <ul class="list-disc list-inside text-gray-700 space-y-1">
+                            <li><strong>Yatırımcı Sayısı:</strong> 200'den 928'e.</li>
+                            <li><strong>Portföy Değeri:</strong> ~200 M TL'den ~928 M TL'ye.</li>
+                            <li><strong>Çıkarım:</strong> Pandemiyle artan genel bireysel ilgi. "Yeni giren ama düşük hacimli" yatırımcı profili.</li>
+                        </ul>
+                    </div>
+                    <div class="section-item-card">
+                        <h4 class="text-lg font-semibold text-blue-700 mb-2">B. Bekleme - Durağan Dönem (2021-2022):</h4>
+                        <ul class="list-disc list-inside text-gray-700 space-y-1">
+                            <li><strong>Yatırımcı Sayısı:</strong> 928'den 1.845'e (2 kat artış).</li>
+                            <li><strong>Portföy Değeri:</strong> ~1.2B TL'den ~1.8B TL'ye.</li>
+                            <li><strong>Çıkarım:</strong> Artış devam etse de hız azalmıştır. Piyasa oynaklığı veya seçim belirsizlikleri bu durağanlığa yol açmış olabilir.</li>
+                        </ul>
+                    </div>
+                    <div class="section-item-card">
+                        <h4 class="text-lg font-semibold text-blue-700 mb-2">C. Ani Sıçrama - Zirve Dönemi (Haziran 2022 - Haziran 2023):</h4>
+                        <ul class="list-disc list-inside text-gray-700 space-y-1">
+                            <li><strong>Yatırımcı Sayısı:</strong> 1.845'ten 48.896'ya (yaklaşık %2500 artış).</li>
+                            <li><strong>Portföy Değeri:</strong> 1.8B TL'den 7.261B TL'ye (4 kat artış).</li>
+                            <li><strong>Çıkarım:</strong> Bireysel yatırımcının en yüksek hacim ve sayıya ulaştığı dönemdir. Enflasyondan korunma refleksi, BIST'teki yüksek getiri dönemleri (2022 yazı - 2023 ilk çeyrek) ve sosyal medyada yatırım içeriklerinin viral etkisi etkili olmuştur.</li>
+                        </ul>
+                    </div>
+                    <div class="section-item-card">
+                        <h4 class="text-lg font-semibold text-blue-700 mb-2">D. Yatırımcı Çıkışı - Stabilizasyon Dönemi (Haziran 2023 - Mayıs 2025):</h4>
+                        <ul class="list-disc list-inside text-gray-700 space-y-1">
+                            <li><strong>Yatırımcı Sayısı:</strong> 48.896'dan 41.680'e (yaklaşık %15 azalma).</li>
+                            <li><strong>Portföy Değeri:</strong> 7.848B TL'den 7.689B TL'ye (stabil).</li>
+                            <li><strong>Çıkarım:</strong> Büyük sermayeli yatırımcılar sistemde kalırken, düşük portföylü kitle piyasadan çekilmiştir. Hisse senedi piyasasında yaşanan oynaklık, kar realizasyonu ve likidite ihtiyacı bu çözülmede etkili olmuştur. Bu durum, Gedik Private'ın nitelikli ve uzun vadeli yatırımcıya odaklanma stratejisi için uygun bir zemin sunmaktadır.</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Alt Bölüm Başlığı -->
+                <h3 class="text-xl sm:text-2xl font-bold text-gray-700 mb-5 mt-8">
+                    1.2. Teknik Özet Tablosu: Pay Senedi Piyasası Performansı
+                </h3>
+                <div class="bg-gray-50 p-8 rounded-xl shadow-inner mb-8">
+                    <table class="styled-table">
+                        <thead>
+                            <tr>
+                                <th>DÖNEM</th>
+                                <th>DÖNEMSEL ANALİZ VE VERİLER</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>2019-2021</td>
+                                <td>Yatırımcı sayısı ve portföy değeri %364 artış gösterdi. Bu dönemde Borsa'ya yeni katılım ve düşük hacimli yatırımlar dikkat çekti.</td>
+                            </tr>
+                            <tr>
+                                <td>2021-2022</td>
+                                <td>Yatırımcı sayısı %100, portföy değeri %50 artış gösterdi. Bu dönem durgun yatırımcı artışı ve piyasa gözlemi ile karakterize edildi.</td>
+                            </tr>
+                            <tr>
+                                <td>Haziran 2022 - Haziran 2023</td>
+                                <td>Yatırımcı sayısında %2500, portföy değerinde %400 gibi büyük bir artış yaşandı. En büyük sıçrama dönemi olup, enflasyondan korunma ve yüksek getiri arayışı etkili oldu.</td>
+                            </tr>
+                            <tr>
+                                <td>Haziran 2023 - Mayıs 2025</td>
+                                <td>Yatırımcı sayısı %15 düşüş gösterirken, portföy değeri %0 (Stabil) kaldı. Bu dönem bir çözülme dönemi olarak yorumlandı ve sadece büyük yatırımcılar piyasada kalmaya devam etti.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <p class="text-lg text-gray-700 mt-6">
+                        Bu tablo, bireysel yatırımcı sayısındaki ve portföy büyüklüğündeki yüzdesel değişimleri, ilgili dönemlere ait kısa ve öz yorumsal değerlendirmelerle birlikte sunarak, piyasa dinamiklerinin anlaşılmasına yardımcı olmaktadır. Elde edilen veriler, piyasaya giriş-çıkış dönemleri ile yatırımcı davranışlarındaki adaptasyonu açıkça sergilemektedir.
+                    </p>
+                    <ul class="list-disc list-inside text-gray-700 space-y-2 mt-4">
+                        <li><strong class="font-bold text-blue-700">2019-2021 Dönemi:</strong> Piyasanın ilk büyüme evresini temsil etmektedir. Yatırımcı sayısındaki ve portföy büyüklüğündeki %364'lük artışlar, Borsa İstanbul'a olan genel ilginin pandemi döneminde arttığını ve nispeten düşük hacimli, yeni yatırımcıların sisteme girdiğini göstermektedir.</li>
+                        <li><strong class="font-bold text-blue-700">2021-2022 Dönemi:</strong> Yatırımcı artışının (+%100) ve portföy büyümesinin (+%50) daha durgun seyrettiği bir dönemdir. Bu durum, piyasa oynaklığının artması, ekonomik belirsizlikler veya piyasanın bir önceki hızlı yükselişin ardından konsolidasyona girmesiyle açıklanabilir.</li>
+                        <li><strong class="font-bold text-blue-700">Haziran 2022 - Haziran 2023 Dönemi:</strong> Piyasanın en büyük sıçramasını yaşadığı kritik bir dönemdir. Yatırımcı sayısındaki %2500'lük ve portföy büyüklüğündeki %400'lük devasa artışlar, yüksek enflasyondan korunma arayışı ve Borsa İstanbul'daki cazip getirilerin yatırımcıları yoğun bir şekilde piyasaya çektiğini göstermektedir.</li>
+                        <li><strong class="font-bold text-blue-700">Haziran 2023 - Mayıs 2025 Dönemi:</strong> Bu dönemde yatırımcı sayısında %15'lik bir düşüş yaşanmasına rağmen, portföy büyüklüğünün stabil kalması (%0 değişim), piyasadan ayrılanların genellikle küçük ve kısa vadeli düşünen yatırımcılar olduğunu, büyük ve nitelikli yatırımcıların ise pozisyonlarını koruduğunu işaret etmektedir.</li>
+                        <li>Bu durum, Gedik Private'ın stratejik hedefi olan nitelikli ve uzun vadeli yatırımcıya odaklanma fırsatını güçlendirmektedir. Bu süreçte Gedik Private, piyasada kalan bu bilinçli yatırımcılara özel danışmanlık ve portföy optimizasyonu hizmetleriyle daha da değer katabilir.</li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- 2. Isparta Bireysel Yatırım Fonu Piyasası Analizi -->
+            <section class="bg-white p-10 rounded-2xl shadow-xl animate-fadeIn" style="animation-delay: 0.7s;">
+                <h2 class="text-3xl sm:text-4xl font-extrabold text-gray-800 mb-6 border-b-2 border-blue-600 pb-4">
+                    2. Isparta Bireysel Yatırım Fonu Piyasası Analizi
+                </h2>
+                <h3 class="text-xl sm:text-2xl font-bold text-gray-700 mb-4">
+                    2.1. Grafik ve Genel Görünüm
+                </h3>
+                <!-- Grafik Başlığı -->
+                <h3 class="text-xl sm:text-2xl font-bold text-gray-700 mb-4">
+                    Grafik 2: Isparta İli Bireysel Yatırım Fonu Yatırımcı Sayısı ve Portföy Büyüklüğü (2019-2025)
+                </h3>
+                <!-- Yatırım Fonu Grafiği -->
+                <div class="mb-2 flex justify-center">
+                    <img src="https://i.hizliresim.com/2azod1v.JPG"
+                         alt="Isparta İli Bireysel Yatırım Fonu Yatırımcı Sayısı ve Portföy Büyüklüğü Grafiği"
+                         class="responsive-image">
+                </div>
+                <p class="source-text-image">Kaynak: MKK</p>
+                <p class="text-lg text-gray-700 mt-6 leading-relaxed">
+                    Bu grafik, Isparta'daki bireysel yatırım fonu pazarının incelenen dönemdeki dinamiklerini, hisse senedi piyasasına benzer bir büyüme ve konsolidasyon döngüsü içinde olduğunu göstermektedir.
+                </p>
+
+                <!-- Alt Bölüm Başlığı -->
+                <h3 class="text-xl sm:text-2xl font-bold text-gray-700 mb-5 mt-8">
+                    2.2 Zamana Göre Gelişim ve Çıkarımlar
+                </h3>
+                <div class="space-y-6">
+                    <div class="section-item-card">
+                        <h4 class="text-lg font-semibold text-blue-700 mb-2">A. Erken Gelişim ve İlk Büyüme (2019-01-2020-05):</h4>
+                        <ul class="list-disc list-inside text-gray-700 space-y-1">
+                            <li><strong>Portföy Değeri (Çubuk Grafik):</strong> Bu dönemde Portföy Değeri 150 Milyon TL'den başlayarak 2020-05'e kadar 216 Milyon TL seviyesine yükselmiştir. Bu, nispeten yavaş ama istikrarlı bir büyümeyi işaret etmektedir.</li>
+                            <li><strong>Yatırımcı Sayısı (Sarı Çizgi):</strong> Yatırımcı Sayısı ise 3.000'li seviyelerden (2019-01: 3.308) 2020-05'te 16.673'e kadar keskin bir artış göstermiştir.</li>
+                        </ul>
+                    </div>
+                    <div class="section-item-card">
+                        <h4 class="text-lg font-semibold text-blue-700 mb-2">B. Konsolidasyon ve Yavaşlama (2020-05-2022-05):</h4>
+                        <ul class="list-disc list-inside text-gray-700 space-y-1">
+                            <li><strong>Portföy Değeri:</strong> 2020-05'teki 216 Milyon TL'den 2022-05'te 508 Milyon TL'ye yükselmiştir. Büyüme devam etse de, bir önceki döneme göre daha ölçülüdür.</li>
+                            <li><strong>Yatırımcı Sayısı:</strong> 2020-05'teki 16.673'ten 2022-05'te 17.034'e çok sınırlı bir artış göstermiştir. Hatta bazı aylarda hafif düşüşler de yaşanmıştır (örn. 2020-07 ve 2021-09).</li>
+                        </ul>
+                    </div>
+                    <div class="section-item-card">
+                        <h4 class="text-lg font-semibold text-blue-700 mb-2">C. Hızlı Büyüme ve Yatırımcı Akını (2022-05-2023-11):</h4>
+                        <ul class="list-disc list-inside text-gray-700 space-y-1">
+                            <li><strong>Portföy Değeri:</strong> 2022-05'teki 508 Milyon TL'den 2023-11'de 2.404 Milyon TL'ye katlanarak artmıştır. Bu dönemdeki büyüme hızı önceki dönemlere göre çok daha fazladır.</li>
+                            <li><strong>Yatırımcı Sayısı:</strong> Aynı dönemde 17.034'ten 25.957'ye fırlamıştır.</li>
+                            <li><strong>Çıkarım:</strong> Fon piyasasında tarihi zirve noktasıdır. Yeni yatırımcı girişi, fon bilinirliğinin artışı, alternatif yatırım aracı olarak fonların görülmesi etkili olmuştur.</li>
+                        </ul>
+                    </div>
+                    <div class="section-item-card">
+                        <h4 class="text-lg font-semibold text-blue-700 mb-2">D. Zirve Yaklaşımı ve İstikrarlı Büyüme (2023-11 - 2025-05):</h4>
+                        <ul class="list-disc list-inside text-gray-700 space-y-1">
+                            <li><strong>Portföy Değeri (Çubuk Grafik):</strong> 2023-11'deki 2.404 Milyon TL'den 2025-05'te 6.265 Milyon TL'ye yükselerek istikrarlı ve güçlü büyümesini sürdürmüştür.</li>
+                            <li><strong>Yatırımcı Sayısı (Sarı Çizgi):</strong> 2023-11'deki 25.957'den 2025-05'te 28.703'e ulaşmıştır. Bu dönemde yatırımcı sayısında da artış devam etse de, önceki "patlama" dönemine göre daha ılımlı bir hızdadır.</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Alt Bölüm Başlığı -->
+                <h3 class="text-xl sm:text-2xl font-bold text-gray-700 mb-5 mt-8">
+                    2.3. Teknik Özet Tablosu: Fon Piyasası Performansı
+                </h3>
+                <div class="bg-gray-50 p-8 rounded-xl shadow-inner mb-8">
+                    <table class="styled-table">
+                        <thead>
+                            <tr>
+                                <th>DÖNEM</th>
+                                <th>DÖNEMSEL ANALİZ VE VERİLER</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>2019-01-2020-05</td>
+                                <td>Piyasaya yeni ilgi, düşük sermayeli yatırımcı girişi ve pandemi etkisiyle Borsa İstanbul ilgisi arttı. Fon yatırımcı sayısında %404, portföy değerinde %44 artış: pay senedi yatırımcı sayısında ve portföy büyüklüğünde %364 artış gözlemlendi.</td>
+                            </tr>
+                            <tr>
+                                <td>2020-05-2022-05</td>
+                                <td>Yeni yatırımcı girişi yavaşladı mevcut yatırımcılar ek yatırımlarla portföy değerini artırdı piyasa oynaklığı ve ekonomik belirsizlikler nedeniyle konsolidasyon yaşandı. Fon yatırımcı sayısında %2, portföy değerinde %135 artış, pay senedi yatırımcı artışı %100, portföy büyümesi %50 oldu.</td>
+                            </tr>
+                            <tr>
+                                <td>2022-05-2023-11</td>
+                                <td>Fonlara yoğun ilgi ve bilinirlik arttı yüksek enflasyon ve cazip getiriler, yatırımcıları pay senedi piyasasına çekti. Fon yatırımcı sayısında %52, portföy değerinde %373 artış, pay senedi yatırımcı sayısında %2500, portföy büyüklüğünde %400 artış kaydedildi.</td>
+                            </tr>
+                            <tr>
+                                <td>2023-11-2025-05</td>
+                                <td>Piyasa olgunlaştı, portföy değeri artışı yatırımcı sayısından hızlı gerçekleşti büyük sermayeli veya bilinçli yatırımcılar pozisyonlarını korurken, küçük ve kısa vadeli yatırımcılar ayrıldı. Fon yatırımcı sayısında %10, portföy değerinde %161 artış yaşanırken, pay senedi yatırımcı sayısında %15 düşüş ve portföy büyüklüğünde %0 değişim gözlemlendi.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <p class="text-lg text-gray-700 mt-6 leading-relaxed">
+                        Bu özet, Isparta ilindeki bireysel yatırımcı dinamiklerini hem pay senedi (hisse senedi) hem de yatırım fonları özelinde, 2019-2025 dönemi verileriyle derinlemesine analiz ederek, Gedik Yatırım Private için stratejik fırsatları netleştirmektedir.
+                    </p>
+                </div>
+            </section>
+
+            <!-- 3. Genel Değerlendirme ve Stratejik Fırsatlar -->
+            <section class="bg-white p-10 rounded-2xl shadow-xl animate-fadeIn" style="animation-delay: 0.9s;">
+                <h2 class="text-3xl sm:text-4xl font-extrabold text-gray-800 mb-6 border-b-2 border-blue-600 pb-4">
+                    3. Genel Değerlendirme ve Stratejik Fırsatlar
+                </h2>
+                <h3 class="text-xl sm:text-2xl font-bold text-gray-700 mb-5 mt-8">
+                    3.1. Pazarda Gözlemlenen Ortak Eğilimler ve Davranışsal Sonuçlar
+                </h3>
+                <ul class="space-y-6">
+                    <li class="section-item-card">
+                        <h4 class="text-lg font-semibold text-blue-700 mb-2">Piyasa Katılımında Büyük Dalga ve Doygunluk:</h4>
+                        <p class="text-lg text-gray-700 leading-relaxed">
+                            Her iki piyasada da 2022-2023 döneminde yatırımcı sayısı ve portföy büyüklüğünde benzer, dramatik bir artış yaşanmıştır. Bu, geniş bir bireysel yatırımcı kitlesinin piyasalara yöneldiğini göstermektedir. Ancak 2023 sonrası dönemin stabilizasyon ve yatırımcı çıkışı, piyasanın bir doygunluğa ulaştığını işaret etmektedir.
+                        </p>
+                    </li>
+                    <li class="section-item-card">
+                        <h4 class="text-lg font-semibold text-blue-700 mb-2">Nitelikli Yatırımcı Konsolidasyonu ("Akıllı Para"):</h4>
+                        <p class="text-lg text-gray-700 leading-relaxed">
+                            Yatırımcı sayısındaki genel düşüşe rağmen, portföy değerlerinin büyük ölçüde korunması, piyasada kalan yatırımcı kitlesinin daha bilinçli, deneyimli ve yüksek sermayeli olduğunu göstermektedir. Bu "akıllı para", Gedik Private'ın doğrudan hedef kitlesidir.
+                        </p>
+                    </li>
+                    <li class="section-item-card">
+                        <h4 class="text-lg font-semibold text-blue-700 mb-2">Artan Bilgi ve Danışmanlık İhtiyacı:</h4>
+                        <p class="text-lg text-gray-700 leading-relaxed">
+                            Kısa vadeli getiri beklentileriyle piyasaya giren, ancak sonrasında konsolidasyon döneminde çekilen yatırımcılar, finansal okuryazarlıkta önemli bir yol katetmiş, ancak doğru yönlendirmeye ihtiyaç duyan bir kitleyi temsil etmektedir. Kalan nitelikli yatırımcılar ise daha karmaşık ve kişiselleştirilmiş danışmanlık hizmetleri arayışında olabilir.
+                        </p>
+                    </li>
+                </ul>
+            </section>
+
+            <!-- 4. Gedik Private Hedeflerine Olası Katkım ve Vizyonum -->
+            <section class="bg-white p-10 rounded-2xl shadow-xl animate-fadeIn" style="animation-delay: 1.1s;">
+                <h2 class="text-3xl sm:text-4xl font-extrabold text-gray-800 mb-6 border-b-2 border-blue-600 pb-4 flex items-center gap-3">
+                    <i class="ph-fill ph-target text-blue-600 text-4xl"></i> <!-- Ana başlık için ikon -->
+                    4. Gedik Private Hedeflerine Olası Katkım ve Vizyonum
+                </h2>
+                <p class="text-lg text-gray-700 leading-relaxed mb-8">
+                    Isparta piyasasının gösterdiği bu dönüşüm ve potansiyel doğrultusunda, Gedik Yatırım Private bünyesinde nitelikli yatırımcı hedeflerine ulaşmada etkin rol oynamak için büyük bir istek duyuyorum. Bu alanda sahip olduğum piyasa analizi, yatırımcı davranışlarını anlama ve strateji geliştirme yetkinliklerimle, Gedik Yatırım'a önemli katkılar sağlayabileceğime inanıyorum.
+                </p>
+
+                <!-- Vizyon başlığı güçlendirilmiş stil ile -->
+                <h3 class="text-3xl font-extrabold text-gray-800 mb-6 px-5 py-4 bg-blue-100/80 rounded-lg inline-block shadow-md">
+                    Vizyonunuz: Gedik Private ile Isparta'da Nitelikli Yatırımcıların Tercihi Olmak
+                </h3>
+                <p class="text-lg text-gray-700 leading-relaxed mb-8 mt-4">
+                    Bu vizyon doğrultusunda, özellikle şu alanlarda aktif görev almayı ve Gedik Yatırım Private'ın başarısına doğrudan katkıda bulunmayı hedefliyorum:
+                </p>
+                <ul class="space-y-6">
+                    <li class="section-item-card">
+                        <h4 class="text-lg font-semibold text-blue-700 mb-2 flex items-center gap-3">
+                            <i class="ph-fill ph-users-four text-blue-600 text-3xl"></i>
+                            Nitelikli Yatırımcı Portföyünü Artırma ve İlişki Derinleştirme:
+                        </h4>
+                        <p class="text-lg text-gray-700 leading-relaxed">
+                            Isparta'da piyasada kalıcılığını sürdüren yüksek portföy değerli yatırımcılarla etkin iletişim ve kişiye özel danışmanlık yürüterek Gedik Private müşteri tabanını genişletmek. Bu yatırımcıların, Gedik Yatırım'ın üstün hizmet kalitesi ve kapsamlı finansal ürün yelpazesi sayesinde maksimum fayda sağlamalarını temin etmek.
+                        </p>
+                    </li>
+                    <li class="section-item-card">
+                        <h4 class="text-lg font-semibold text-blue-700 mb-2 flex items-center gap-3">
+                            <i class="ph-fill ph-book-open text-blue-600 text-3xl"></i>
+                            Bireysel Yatırımcı Eğitim ve Bilinçlendirme Faaliyetlerine Liderlik Etme:
+                        </h4>
+                        <p class="text-lg text-gray-700 leading-relaxed">
+                            Gedik Yatırım'ın marka bilinirliğini ve geniş finansal ürün yelpazesini vurgulayan, bireysel yatırımcılara yönelik özel eğitim seminerleri, webinarlar ve atölye çalışmaları düzenlenmesinde proaktif görev almak. Özellikle piyasadan çekilen ancak finansal okuryazarlığı artmış olabilecek kitleyi hedefleyerek, Gedik Yatırım'a güven duymalarını sağlamak ve potansiyel nitelikli müşteriler havuzu oluşturmak. Bu etkinliklerde, Gedik Yatırım'ın araştırma ekibinin sunduğu değerleri ve özel portföy yönetimi anlayışını ön plana çıkarmak.
+                        </p>
+                    </li>
+                    <li class="section-item-card">
+                        <h4 class="text-lg font-semibold text-blue-700 mb-2 flex items-center gap-3">
+                            <i class="ph-fill ph-megaphone text-blue-600 text-3xl"></i>
+                            Pazar Geliştirme ve Etkinlik Organizasyonları:
+                        </h4>
+                        <p class="text-lg text-gray-700 leading-relaxed">
+                            Gedik Private'ın hedeflediği nitelikli yatırımcı kitlesine yönelik özel davetli etkinlikler, yatırım kulüpleri veya tematik buluşmalar gibi pazar geliştirme faaliyetlerini organize etmek ve yürütmek. Bu sayede, potansiyel Private müşterileriyle doğrudan, samimi ve kaliteli ilişkiler kurarak Gedik Yatırım'ın ayrıcalıklı hizmetlerini tanıtmak.
+                        </p>
+                    </li>
+                    <li class="section-item-card">
+                        <h4 class="text-lg font-semibold text-blue-700 mb-2 flex items-center gap-3">
+                            <i class="ph-fill ph-lightbulb-filament text-blue-600 text-3xl"></i>
+                            Bireysel Yatırımcı İhtiyaçlarına Özel Strateji Geliştirme:
+                        </h4>
+                        <p class="text-lg text-gray-700 leading-relaxed">
+                            Veriye dayalı analizleri ve piyasa eğilimlerini takip ederek, mevcut ve potansiyel yatırımcıların dinamik ihtiyaçlarına yönelik kişiselleştirilmiş yatırım stratejileri ve portföy önerileri geliştirmek. Bu sayede, Gedik Private'ın müşteri tabanını hem nicelik hem de nitelik olarak artırma hedefine doğrudan katkıda bulunmak.
+                        </p>
+                    </li>
+                </ul>
+
+                <p class="text-lg text-gray-700 leading-relaxed mt-8 mb-6">
+                    Gedik Yatırım'ın köklü tarihi, müşteri odaklı yaklaşımı, güçlü araştırma ekibi ve bireysel yatırımcıya verdiği değer, benim gibi bu alanda tutkuyla çalışan biri için <strong class="font-bold text-blue-700">ideal bir çalışma ortamı sunmaktadır</strong>.
+                </p>
+                <p class="text-lg text-gray-700 leading-relaxed">
+                    Bu pozisyonda, Gedik Yatırım Private'ın Isparta'daki büyüme hedeflerine ulaşmasına, marka değerini artırmasına ve bireysel yatırımcılar için tercih edilen lider çözüm ortağı olmasına doğrudan katkı sağlayabilecek potansiyelde olduğumu ve bu sorumluluğu <strong class="font-bold text-blue-700">büyük bir motivasyonla üstleneceğimi</strong> belirtmek isterim.
+                </p>
+            </section>
+
+        </main>
+
+        <!-- Alt Bilgi (Footer) -->
+        <footer class="w-full max-w-7xl mx-auto mt-16 py-8 text-center text-gray-600 text-sm border-t border-gray-300 pt-8 animate-fadeIn" style="animation-delay: 1.3s;">
+            <p>&copy; 2025 Gedik Yatırım Private | Isparta Bireysel Yatırımcı Dinamikleri Analizi</p>
+            <p class="mt-2">Bu rapor, yalnızca bilgilendirme amaçlıdır.</p>
+        </footer>
+
+    </div>
+
+</body>
+</html>
